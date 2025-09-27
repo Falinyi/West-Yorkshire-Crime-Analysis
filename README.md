@@ -94,7 +94,7 @@ This repository presents a **reproducible analysis** of police‑reported crime 
 
 - **Author**: Falinyi Samson  
 - **Email**: [samsonfalinyi@gmail.com](mailto:samsonfalinyi@gmail.com)  
-- **LinkedIn**: [Add your profile link here](#)
+
 
 ---
 
