@@ -1,0 +1,31 @@
+Metric,Value
+Total crimes,24657
+Missing: ...1,0
+Missing: Crime ID,4584
+Missing: Month,1000
+Missing: Reported by,1000
+Missing: Falls within,1000
+Missing: Longitude,1534
+Missing: Latitude,1534
+Missing: Location,1000
+Missing: LSOA code,1534
+Missing: LSOA name,1534
+Missing: Crime type,1000
+Missing: Last outcome category,5391
+Missing: Context,24657
+Top crime type: Violence and sexual offences,8793
+Top crime type: Anti-social behaviour,4388
+Top crime type: Public order,2853
+Top crime type: Criminal damage and arson,1932
+Top crime type: Other theft,1209
+Top location: NA,1000
+Top location: No Location,534
+Top location: On or near Supermarket,410
+Top location: On or near Sports/Recreation Area,360
+Top location: On or near Parking Area,330
+Top outcome: Unable to prosecute suspect,9844
+Top outcome: Investigation complete; no suspect identified,6066
+Top outcome: NA,5391
+Top outcome: Court result unavailable,1698
+Top outcome: Status update unavailable,573
+Note,"This summary provides key crime statistics for West Yorkshire in May 2020, including total crimes, missing values, top 5 crime types, locations, and outcomes. It offers a snapshot of crime patterns and data quality for the month."
