@@ -1,0 +1,120 @@
+---
+title: "Police Reported Crime Trends: West Yorkshire Crime Analysis (April–September 2020)"
+author: "FALINYI SAMSON"
+date: "2025-07-22"
+output:
+  pdf_document:
+    latex_engine: xelatex
+---
+# Introduction
+This report analyses police reported crime data for West Yorkshire from April to September 2020, examining how crime patterns evolved during this period. The analysis uses R for data processing and visualisation, focusing on temporal trends, crime type distribution, and geographic patterns across 158,898 crime records.
+```{r load-data, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(ggplot2)
+
+# Load data
+april_2020 <- read_csv("../data_raw.raw/2020-04/2020-04-west-yorkshire-street.csv")
+may_2020 <- read_csv("../data_raw.raw/2020-05/2020-05-west-yorkshire-street.csv")
+june_2020 <- read_csv("../data_raw.raw/2020-06/2020-06-west-yorkshire-street.csv")
+july_2020 <- read_csv("../data_raw.raw/2020-07/2020-07-west-yorkshire-street.csv")
+august_2020 <- read_csv("../data_raw.raw/2020-08/2020-08-west-yorkshire-street.csv")
+september_2020 <- read_csv("../data_raw.raw/2020-09/2020-09-west-yorkshire-street.csv")
+
+# Combine all months (April-September 2020)
+all_months <- bind_rows(
+  april_2020 %>% mutate(Month = "April"),
+  may_2020 %>% mutate(Month = "May"),
+  june_2020 %>% mutate(Month = "June"),
+  july_2020 %>% mutate(Month = "July"),
+  august_2020 %>% mutate(Month = "August"),
+  september_2020 %>% mutate(Month = "September")
+)
+```
+# Monthly Crime Trends
+By examining trends on a month by month basis, we can pinpoint periods of increased or decreased crime and explore potential external influences.
+```{r monthly-totals}
+monthly_totals <- tibble(
+  Month = c("April", "May", "June", "July", "August", "September"),
+  Total_Crimes = c(21785, 24657, 26730, 29278, 29433, 27015)
+)
+monthly_totals <- monthly_totals %>%
+  mutate(Month = factor(Month, levels = c("April", "May", "June", "July", "August", "September")))
+
+ggplot(monthly_totals, aes(x = Month, y = Total_Crimes, group = 1)) +
+  geom_line(color = "steelblue", linewidth = 1.2) +
+  geom_point(size = 3) +
+  labs(title = "Total Crimes per Month (April-September 2020)",
+       x = "Month", y = "Number of Crimes")
+```
+Police reported crimes increased 35% from April (21,785) to August (29,433), then declined in September (27,015). This upward trend from spring into late summer may reflect the gradual easing of COVID-19 restrictions and increased public activity, with the September decline potentially indicating seasonal changes or renewed public health measures.
+
+# Crime Type Analysis
+Violence and sexual offences dominated throughout the period, accounting for 57,483 cases (36% of total crimes). The top 5 crime types showed similar temporal patterns to overall trends.
+```{r crime-type-summary,}
+crime_type_summary <- all_months %>%
+  count(`Crime type`, sort = TRUE)
+print(head(crime_type_summary, 5))
+```
+```{r crime-type-trends-plot, fig.width=6, fig.height=3}
+top_types <- crime_type_summary %>% slice_max(n, n = 5) %>% pull(`Crime type`)
+crime_type_trends <- all_months %>%
+  count(Month, `Crime type`) %>%
+  filter(`Crime type` %in% top_types) %>%
+  mutate(Month = factor(Month, levels = c("April", "May", "June", "July", "August", "September")))
+ggplot(crime_type_trends, aes(x = Month, y = n, color = `Crime type`, group = `Crime type`)) +
+  geom_line(linewidth = 1.2) +
+  geom_point(size = 2) +
+  labs(title = "Trends in Top 5 Crime Types (April–September 2020)",
+       x = "Month", y = "Number of Crimes", color = "Crime Type") +
+  theme_minimal()
+```
+
+All the major crime categories followed the overall pattern of April to August increase, followed by September decline, suggesting external factors affected crime more than crime specific factors.
+
+# By Chance or Statistically Significant?
+To determine whether the observed differences in crime type frequencies across months were due to random variation or represent a statistically significant pattern, a chi-squared test of independence is conducted.
+```{r chi-squared-test}
+crime_type_table <- table(all_months$Month, all_months$`Crime type`)
+chi_result <- chisq.test(crime_type_table)
+chi_result
+```
+The test result demonstrates that the observed changes in crime type frequencies are highly statistically significant and are unlikely to be due to chance. This highlights the need for targeted policy interventions. 
+
+# Geographic Patterns and Data Quality Assessment
+Persistent hotspots identified across all months, with the most frequent locations being "On or near supermarket", "No Location", "On or near Parking Area", and "On or near Sports/Recreation Area". The presence of "No Location" and missing values highlights areas where improved data collection could enhance geographic analysis precision. 
+```{r top-locations-plot, fig.width=8, fig.height=3}
+top_locations_overall <- all_months %>%
+  count(Location, sort = TRUE) %>%
+  slice_max(n, n = 10)
+ggplot(top_locations_overall, aes(x = reorder(Location, n), y = n)) +
+  geom_col(fill = "orange") +
+  coord_flip() +
+  labs(title = "Top 10 Crime Locations (April–September 2020)",
+       x = "Location", y = "Number of Crimes") +
+  theme_minimal()
+```
+
+# Discussion and Conclusion
+The analysis of West Yorkshire crime data from April to September 2020 reveals several important patterns and insights. There was a clear 35% increase in reported crimes from April through August, peaking in late summer, followed by a decline in September. This trend likely reflects the gradual easing of COVID-19 restrictions, increased public activity, and possibly seasonal effects. 
+
+Violence and sexual offences were the most common crime type, both month by month and overall, accounting for over a third of all reported crimes. This aligns with national trends, where such offences have reached record levels and are a major focus for law enforcement (ONS, 2023). Anti-social behaviour and public order offences were also prominent throughout the period.
+
+Notably, the least common crime type in the dataset was labeled "Exclusive". However, this category does not correspond to any recognised crime type in official UK or international crime classification systems (UNODC,2016) and is likely a data entry artifact or placeholder. Its presence highlights the need for careful data validation and underscores the importance of standardised crime type categories for robust analysis.
+
+Geographically, persistent hotspots were identified around retail locations and public spaces, such as "On or near Supermarket", "On or near Parking Area", and "On or near Sports/Recreation Area". The frequent occurrence of "No Location" and missing values indicates areas where improved data collection could enhance the precision of geographic analysis.
+
+A chi-squared statistical test confirmed that changes in crime type frequencies across months were highly statistically significant (χ² = 809.45, df = 70, p < 2.2e-16), indicating that these shifts are unlikely to be due to chance alone and represent real, systematic changes in crime patterns.
+
+# Limitations and Next Steps
+This analysis covers six months during an unprecedented period and lacks demographic variables or pre-pandemic baseline data. Some geographic precision is limited by missing or vague location information, and the analysis cannot definitively separate COVID-19 effects from normal seasonal patterns.
+
+With additional time or data, this analysis could be expanded by mapping crime density to identify spatial hotspots, examining trends by day of week and time of day, and investigating links between crime types and outcomes. Considering this data is representative of the COVID-19 pandemic and lockdown era, a key priority would be to compare these findings with pre-pandemic data (2018–2019) to isolate COVID specific effects from normal seasonal variation. This would involve integrating mobility data and policy timelines to understand whether the observed April–August 2020 increase reflects restriction easing or represents displaced crime patterns, providing valuable insights for future emergency response planning.
+
+# Recommendations
+ - Focus interventions on the most common crime types and persistent hotspots.
+ - Improve data collection, especially for location and crime type fields.
+ - Regularly monitor trends to evaluate the impact of policy changes or interventions.
+
+# References
+ - Office for National Statistics. (2023) Sexual offences in England and Wales overview: year ending March 2022. [Available at: https://www.ons.gov.uk/peoplepopulationandcommunity/crimeandjustice/bulletins/sexualoffencesinenglandandwalesoverview/march2022](https://www.ons.gov.uk/peoplepopulationandcommunity/crimeandjustice/bulletins/sexualoffencesinenglandandwalesoverview/march2022) (Accessed: 21 July 2025).
+ - United Nations Office on Drugs and Crime (UNODC). (2016) International Classification of Crime for Statistical Purposes (ICCS). [Available at: https://www.unodc.org/unodc/en/data-and-analysis/statistics/iccs.html](https://www.unodc.org/unodc/en/data-and-analysis/statistics/iccs.html) (Accessed: 21 July 2025).

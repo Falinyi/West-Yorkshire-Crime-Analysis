@@ -1,0 +1,30 @@
+Metric,Value
+Total crimes,29278
+Missing: ...1,0
+Missing: Crime ID,5828
+Missing: Month,0
+Missing: Reported by,0
+Missing: Longitude,719
+Missing: Latitude,719
+Missing: Location,0
+Missing: LSOA code,719
+Missing: LSOA name,719
+Missing: Crime type,0
+Missing: Last outcome category,5828
+Missing: Context,29278
+Top crime type: Violence and sexual offences,10721
+Top crime type: Anti-social behaviour,5825
+Top crime type: Public order,3329
+Top crime type: Criminal damage and arson,2353
+Top crime type: Other theft,1507
+Top location: No Location,719
+Top location: On or near Supermarket,595
+Top location: On or near Parking Area,508
+Top location: On or near Sports/Recreation Area,440
+Top location: On or near Petrol Station,334
+Top outcome: Unable to prosecute suspect,11811
+Top outcome: Investigation complete; no suspect identified,7941
+Top outcome: NA,5828
+Top outcome: Court result unavailable,1913
+Top outcome: Status update unavailable,716
+Note,"This summary provides key crime statistics for West Yorkshire in July 2020, including total crimes, missing values, top 5 crime types, locations, and outcomes. It offers a snapshot of crime patterns and data quality for the month."
